@@ -144,6 +144,7 @@ function configurarEventosBasicos() {
   
   els.btnSalir.addEventListener('click', cerrarSesionApp);
   els.btnProcesarCSV.addEventListener('click', procesarArchivosCSVProfesor);
+  els.btnReiniciarTorneo.addEventListener('click', reiniciarTorneoCompletoProfesor);
   els.stNombre.addEventListener('dblclick', dispararLogroOcultoCurioso);
   els.btnGuardarNombreEquipo.addEventListener('click', guardarNombreEscuadra);
   els.btnGirarRuleta.addEventListener('click', lanzarGiroRuletaLógica);
@@ -712,7 +713,49 @@ function renderizarExpedientesProfesor() {
     els.listaFichasProfesores.appendChild(item);
   });
 }
+async function reiniciarTorneoCompletoProfesor() {
+  const confirmar = confirm("¿Estás completamente seguro de reiniciar todo el torneo? Se borrarán permanentemente todas las escuadras, los puntos individuales, los pasos, los feedbacks y los logros acumulados hoy.");
+  if (!confirmar) return;
 
+  try {
+    crearToast("Iniciando limpieza general en la nube...", "default");
+
+    // 1. Obtener y vaciar todos los equipos registrados en Firestore
+    const queryEquipos = await getDocs(collection(db, "equipos"));
+    const promesasEquipos = [];
+    queryEquipos.forEach(docSnap => {
+      // Dejamos el documento del equipo vacío para removerlo de la interfaz en tiempo real
+      promesasEquipos.push(setDoc(doc(db, "equipos", docSnap.id), {}));
+    });
+    await Promise.all(promesasEquipos);
+
+    // 2. Limpiar las métricas, cronómetros y logros de cada estudiante en la nube
+    const promesasEstudiantes = [];
+    localEstudiantes.forEach(est => {
+      const refEst = doc(db, "estudiantes", est.id);
+      promesasEstudiantes.push(updateDoc(refEst, {
+        puntos: 0,
+        pasos: 0,
+        sesionIniciadaHoy: false, // Fuerza el cierre de sesión de los alumnos para reiniciar sus relojes
+        logros: [],
+        feedbacksRecibidos: [],
+        retoActual: null,
+        adversidadActual: null
+      }));
+    });
+    await Promise.all(promesasEstudiantes);
+
+    // 3. Notificar éxito y recargar la página para limpiar la pantalla por completo
+    crearToast("¡Base de datos limpiada con éxito! Reiniciando entorno...", "success");
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000);
+
+  } catch (error) {
+    console.error(error);
+    crearToast("Hubo un error al intentar vaciar la base de datos.", "error");
+  }
+}
 
 function iniciarCronometroSesion() {
   if(cronometroIntervalo) clearInterval(cronometroIntervalo);
