@@ -262,7 +262,12 @@ async function conectarEstudianteSesion(datosEstudiante) {
 }
 
 async function actualizarFlujoEstudianteRealTime() {
-  const yo = localEstudiantes.find(e => e.id === usuarioLogueado);
+  const yo = localEstudiantes.find(e => {
+      const palabrasInput = usuarioLogueado.toLowerCase().trim().split(/\s+/).filter(Boolean);
+      const palabrasCSV = e.id.toLowerCase().trim().split(/\s+/).filter(Boolean);
+      if (palabrasInput.length !== palabrasCSV.length) return false;
+      return palabrasInput.every(palabra => palabrasCSV.includes(palabra));
+    });
   if(!yo) return;
 
   els.stNombre.textContent = yo.id;
