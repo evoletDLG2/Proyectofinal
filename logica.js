@@ -88,6 +88,7 @@ const els = {
   csvActividades: document.getElementById('csvActividades'),
   csvAdversidades: document.getElementById('csvAdversidades'),
   btnProcesarCSV: document.getElementById('btnProcesarCSV'),
+  btnReiniciarTorneo: document.getElementById('btnReiniciarTorneo'),
   listaFichasProfesores: document.getElementById('listaFichasProfesores'),
   
   contenedorTrofeos: document.getElementById('contenedorTrofeos'),
