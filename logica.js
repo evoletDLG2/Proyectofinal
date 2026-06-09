@@ -285,6 +285,20 @@ async function actualizarFlujoEstudianteRealTime() {
     } else {
       els.bloqueBautizo.classList.add('hidden');
     }
+    if (miEquipo.miembros.length === 1) {
+    // Si está solo, le abrimos a la fuerza el panel para que invite compañeros
+    els.panelReclutador.classList.remove('hidden');
+    
+    const alumnosLibresTotales = localEstudiantes.filter(e => 
+      e.id !== usuarioLogueado && 
+      !localEquipos.some(eq => eq.miembros && eq.miembros.includes(e.id))
+    );
+    
+    renderizarListaAlumnosLibres(alumnosLibresTotales);
+  } else {
+    // Si ya tiene más compañeros, dejamos que el flujo siga normal
+    els.panelReclutador.classList.add('hidden');
+  }
 
     els.listaMiembrosEquipo.innerHTML = "";
     els.selectCompanero.innerHTML = "";
