@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hijos de Peña - Gamificación Escolar</title>
+  <link rel="stylesheet" href="personalizado.css">
+</head>
+<body>
+  <!-- Contenedor Principal de la Aplicación -->
+  <div class="app-shell" id="appShell">
+    <header class="topbar">
+      <div class="brand-group">
+        <button class="icon-btn" id="btnMenu" aria-label="Abrir menú">☰</button>
+        <div class="brand-copy">
+          <span class="eyebrow">Gamificación Escolar v2.0 - RealTime</span>
+          <h1 id="tituloApp">Hijos de Peña</h1>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <div class="status-pill" id="statusSesion">Desconectado</div>
+        <button class="ghost-btn hidden" id="btnSalir">Salir</button>
+      </div>
+    </header>
+
+    <!-- Menú lateral de navegación -->
+    <nav class="nav-principal hidden" id="navPrincipal">
+      <button class="nav-link active" data-vista="inicio">Inicio</button>
+      <button class="nav-link hidden" id="linkEstudiante" data-vista="estudiante">Panel Estudiante</button>
+      <button class="nav-link hidden" id="linkProfesor" data-vista="profesor">Panel Profesor</button>
+      <button class="nav-link hidden" id="linkTrofeos" data-vista="trofeos">Vitrina de Trofeos</button>
+    </nav>
+
+    <!-- Área de contenido dinámico -->
+    <main class="main-content">
+      
+      <!-- PANTALLA 1: ACCESO -->
+      <section class="screen" id="pantallaInicio">
+        <div class="welcome-card">
+          <h2>Bienvenido al Juego</h2>
+          <p>Selecciona tu rol para ingresar al sistema en tiempo real.</p>
+          <div class="grid-2">
+            <button class="main-btn" id="btnRolEstudiante">Soy Estudiante</button>
+            <button class="secondary-btn" id="btnRolProfesor">Soy Profesor</button>
+          </div>
+        </div>
+
+        <!-- Formulario Profesor -->
+        <div class="login-box hidden" id="loginProfesor">
+          <h3>Acceso de Profesores</h3>
+          <input type="password" id="inputPassProfesor" placeholder="Ingresa la contraseña fija">
+          <button class="main-btn" id="btnEntrarProfesor">Verificar Credencial</button>
+        </div>
+
+        <!-- Formulario Estudiante -->
+        <div class="login-box hidden" id="loginEstudiante">
+          <h3>Acceso de Alumnos</h3>
+          <input type="text" id="inputNombreEstudiante" placeholder="Escribe tu nombre completo...">
+          <button class="main-btn" id="btnEntrarEstudiante">Iniciar Sesión</button>
+          <div class="suggestion-box hidden" id="cajaSugerencia">
+            <p>¿Quisiste decir: <strong id="textoFuzzy"></strong>?</p>
+            <button class="accent-btn" id="btnAceptarSugerencia">¡Hacer clic aquí para entrar!</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANTALLA 2: ENTORNO ESTUDIANTE -->
+      <section class="screen hidden" id="pantallaEstudiante">
+        <div class="student-layout">
+          <!-- Datos Personales -->
+          <article class="card neon-border">
+            <div class="card-header">
+              <h2 id="stNombre" class="interactive-name">Cargando...</h2>
+              <span class="badge" id="stRol">Rol</span>
+            </div>
+            <div class="metrics-grid">
+              <div class="metric-item"><h5>Puntos Ind.</h5><p id="stPuntos">0</p></div>
+              <div class="metric-item"><h5>Pasos</h5><p id="stPasos">0</p></div>
+              <div class="metric-item"><h5>Sesión</h5><p id="stCronometro">00:00</p></div>
+            </div>
+          </article>
+
+          <!-- Gestión de Equipos RealTime -->
+          <article class="card" id="seccionEquipo">
+            <h3>Tu Escuadra</h3>
+            <div id="sinEquipo" class="stack">
+              <p class="muted">No perteneces a ningún equipo actualmente.</p>
+              <div id="panelReclutador" class="hidden">
+                <p class="accent-text">💡 Tienes rango de reclutamiento activo por prelación jerárquica.</p>
+                <h4>Compañeros Disponibles:</h4>
+                <div class="list-container" id="listaDisponibles"></div>
+              </div>
+            </div>
+            
+            <div id="conEquipo" class="stack hidden">
+              <h2 id="nombreEquipoActual" class="glow-text">Equipo Sin Nombre</h2>
+              <div id="bloqueBautizo" class="hidden row-group">
+                <input type="text" id="inputNombreEquipo" placeholder="Nombra a tu escuadra para registrarla">
+                <button class="accent-btn" id="btnGuardarNombreEquipo">Bautizar Equipo</button>
+              </div>
+              <h4>Miembros de la escuadra:</h4>
+              <div class="list-container" id="listaMiembrosEquipo"></div>
+            </div>
+          </article>
+
+          <!-- Ruleta de Destino y Frustración -->
+          <article class="card hidden" id="seccionRuleta">
+            <h3>Ruleta de Desafíos y Adversidades</h3>
+            <div class="wheel-box">
+              <div class="wheel-visual" id="visualRuleta">🎯</div>
+              <button class="main-btn" id="btnGirarRuleta">Girar Ruleta</button>
+            </div>
+            <div id="controlReto" class="stack hidden">
+              <div class="challenge-alert">
+                <h4>Actividad Propuesta:</h4>
+                <p id="ruletaActividad">Gira para obtener un reto</p>
+                <small id="ruletaDescripcion"></small>
+              </div>
+              <div class="grid-2">
+                <button class="ok-btn" id="btnAceptarReto">Aceptar Participar</button>
+                <button class="danger-btn" id="btnRechazarReto">Rechazar / Despreciar</button>
+              </div>
+              <p class="danger-text" id="txtPenalizacion">Racha de rechazo actual: 0 puntos en juego.</p>
+            </div>
+            <div id="alertaAdversidad" class="adversity-banner hidden">
+              <h4>⚠️ ¡ADVERSIDAD DIRECTA IMPUESTA!</h4>
+              <p id="txtAdversidad">Ninguna</p>
+            </div>
+          </article>
+
+          <!-- Co-Working y Co-Evaluación -->
+          <article class="card hidden" id="seccionFeedback">
+            <h3>Feedbacks y Co-Evaluación del Equipo</h3>
+            <div class="form-group">
+              <label for="selectCompanero">Seleccionar compañero:</label>
+              <select id="selectCompanero"></select>
+              <textarea id="textoFeedback" placeholder="Escribe una reseña corta o reporta una actitud de frustración..."></textarea>
+              <label class="row-check">
+                <input type="checkbox" id="checkDesperfeccion">
+                <span>Marcar como "Desperfección / Actitud Incorrecta"</span>
+              </label>
+              <button class="secondary-btn" id="btnEnviarFeedback">Subir Feedback a la Nube</button>
+            </div>
+          </article>
+
+          <!-- Panel General de Equipos de la Clase -->
+          <article class="card">
+            <h3>Monitoreo Global de Escuadras</h3>
+            <div class="grid-2" id="rankingEquiposGlobal"></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- PANTALLA 3: ENTORNO PROFESOR -->
+      <section class="screen hidden" id="pantallaProfesor">
+        <div class="teacher-layout">
+          <!-- Carga Base de Datos en la Nube -->
+          <article class="card">
+            <h3>Carga de Documentación CSV a la Nube</h3>
+            <div class="csv-upload-grid">
+              <div class="file-field">
+                <label>1. Estudiantes y Roles:</label>
+                <input type="file" id="csvEstudiantes" accept=".csv">
+              </div>
+              <div class="file-field">
+                <label>2. Actividades del Torneo:</label>
+                <input type="file" id="csvActividades" accept=".csv">
+              </div>
+              <div class="file-field">
+                <label>3. Banco de Adversidades:</label>
+                <input type="file" id="csvAdversidades" accept=".csv">
+              </div>
+            </div>
+            <button class="main-btn" id="btnProcesarCSV">Procesar e Inyectar a Firestore</button>
+          </article>
+
+          <!-- Expedientes Desplegables de Alumnos -->
+          <article class="card">
+            <h3>Expedientes de Alumnos (Haga clic para desplegar u ocultar)</h3>
+            <div class="accordion-container" id="listaFichasProfesores"></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- PANTALLA 4: VITRINA DE TROFEOS -->
+      <section class="screen hidden" id="pantallaTrofeos">
+        <div class="showcase-head">
+          <h2>Vitrina Escolar de Trofeos</h2>
+          <p>Medallas unlocked en tiempo real por tus logros y resiliencia.</p>
+        </div>
+        <div class="trophies-grid" id="contenedorTrofeos"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Zona de alertas flotantes (Toasts) -->
+  <div class="toast-zone" id="toastZone"></div>
+
+  <!-- Modal Emergente para Alertas Instantáneas de Invitación -->
+  <div class="modal-overlay hidden" id="modalInvitacion">
+    <div class="modal-card">
+      <h3>🔔 INVITACIÓN EN TIEMPO REAL</h3>
+      <p id="txtModalInvitacion">Te han invitado a unirte a un equipo.</p>
+      <div class="grid-2">
+        <button class="ok-btn" id="btnModalAceptar">Aceptar Unirme</button>
+        <button class="danger-btn" id="btnModalRechazar">Rechazar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARGA DE SDK DE FIREBASE (Firestore Versión Web Modular vía CDN) -->
+  <script type="module" src="logica.js"></script>
+</body>
+</html>
